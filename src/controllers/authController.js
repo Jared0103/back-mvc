@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt')
 const jsonwebtoken = require('jsonwebtoken')
-const { createUser, findUserByEmail } = require('../services/userServices')
+const { createUser, findUserByEmail } = require('../services/userService')
 
 exports.signup = async (req, res) => {
     try {
         // Codigo para registrarse
-        const { email, password } = req.body
+        const { email, password, id } = req.body
         const existingUser = await findUserByEmail(email)
         if (existingUser.success) {
             return res.status(400).json({
@@ -18,7 +18,8 @@ exports.signup = async (req, res) => {
 
         const newUser = {
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            id: id
             //agregar otros campos
         }
 
@@ -47,15 +48,15 @@ exports.login = async (req, res) => {
         const findEmail = await findUserByEmail(email)
 
         if (!findEmail.success) {
-            res.status(401).json({
+            return res.status(401).json({
                 message: 'Usuario no encontrado'
             })
         }
         const user = findEmail.user
         const findPassword = await bcrypt.compare(password, user.password)
 
-        if (!findPassword.success) {
-            res.status(401).json({
+        if (!findPassword) {
+            return res.status(401).json({
                 message: 'Password incorrecto'
             })
         }
@@ -71,7 +72,7 @@ exports.login = async (req, res) => {
             token: token
         })
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message
         })
     }
