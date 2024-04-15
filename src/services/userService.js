@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { createUser, findUserByEmail } = require('../models/userModel');
+const { createUser, findUserByEmail, getAllUsers, deleteUser, updateUser } = require('../models/userModel');
 require('dotenv').config()
 
 exports.createUser = async (userData) => {
@@ -67,3 +67,28 @@ exports.generateToken = async (user) => {
         throw new Error('Error al generar el token')
     }
 };
+
+exports.getAllUsers = async () => {
+    try {
+        const users = await getAllUsers()
+        return users
+    } catch (error) {
+        throw new Error('Error Getting Users: ' + error.message)
+    }
+}
+
+exports.deleteUser = async (userId) => {
+    try {
+        await deleteUser(userId)
+    } catch (error) {
+        throw new Error('Error Deleting user' + error.message)
+    }
+}
+
+exports.updateUser = async (userId, userData) => {
+    try {
+        await updateUser(userId, userData)
+    } catch (error) {
+        throw new Error('Error Updating user' + error.message)
+    }
+}
