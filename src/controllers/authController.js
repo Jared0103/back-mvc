@@ -5,42 +5,48 @@ const { response } = require('express')
 
 exports.signup = async (req, res) => {
     try {
-        // Codigo para registrarse
-        const { email, password, id } = req.body
-        const existingUser = await findUserByEmail(email)
+        const { email, password, id, nombre, apellidoPaterno, apellidoMaterno, telefono, direccion, cPostal, estado } = req.body;
+        const existingUser = await findUserByEmail(email);
+        
         if (existingUser.success) {
             return res.status(400).json({
-                message: 'El usuario ya esta registrado'
-            })
+                message: 'El usuario ya está registrado'
+            });
         }
 
-        const saltRounds = 10
-        const hashedPassword = await bcrypt.hash(password, saltRounds)
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const newUser = {
             email: email,
             password: hashedPassword,
-            id: id
-            //agregar otros campos
-        }
+            id: id,
+            nombre: nombre,
+            apellidoPaterno: apellidoPaterno,
+            apellidoMaterno: apellidoMaterno,
+            telefono: telefono,
+            direccion: direccion,
+            cPostal: cPostal,
+            estado: estado
+        };
 
-        const userResult = await createUser(newUser)
+        const userResult = await createUser(newUser);
         if (userResult.success) {
             res.status(201).json({
                 message: 'Usuario registrado satisfactoriamente'
-            })
+            });
         } else {
             res.status(500).json({
                 message: 'Error al registrar usuario'
-            })
+            });
         }
-
     } catch (error) {
         res.status(500).json({
             message: error.message
-        })
+        });
     }
-}
+};
+
 
 exports.login = async (req, res) => {
     try {
